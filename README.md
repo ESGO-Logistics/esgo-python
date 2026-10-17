@@ -1,94 +1,4 @@
 # ESGO Python SDK
-German Version down below
-
-Official Python client for the [ESGO API](https://es-go.de/developers): find
-matching empty-run capacity for road freight and publish open transport
-requests from your TMS or ERP.
-
-> **Pre-release.** Version 0.0.1 covers `GET /v1/me` only. Matching search and
-> open requests follow in 0.1.0. The API may still change before 1.0.
-
-## Installation
-
-```sh
-pip install esgo
-```
-
-Requires Python 3.10 or newer.
-
-## Access
-
-API keys are issued by ESGO; there is no self-service sign-up yet. Request
-access at [es-go.de/developers](https://es-go.de/developers). Keep your key
-secret and never commit it to a repository.
-
-## Usage
-
-Set the key once and call the API through the `esgo` module, like the `stripe`
-package:
-
-```python
-import esgo
-
-esgo.api_key = "esgo_live_..."   # or set the ESGO_API_KEY environment variable
-
-me = esgo.me.retrieve()
-print(me["account_role"], me["quotas"])
-```
-
-Or create a client, which is useful when you work with several keys:
-
-```python
-import esgo
-
-with esgo.Client(api_key="esgo_live_...") as client:
-    me = client.me.retrieve()
-```
-
-## Errors
-
-Every API error raises a subclass of `esgo.APIError` with the fields of the
-ESGO error envelope:
-
-```python
-try:
-    esgo.me.retrieve()
-except esgo.RateLimitError as e:
-    print("Try again in", e.retry_after, "seconds")
-except esgo.APIError as e:
-    print(e.status, e.code, e.message, e.param, e.request_id)
-```
-
-| Exception | HTTP status |
-|---|---|
-| `InvalidRequestError` | 400, 422 |
-| `AuthenticationError` | 401 |
-| `PermissionDeniedError` | 403 |
-| `NotFoundError` | 404 |
-| `RateLimitError` | 429 |
-| `ServiceUnavailableError` | 503 |
-| `InternalServerError` | other 5xx |
-| `APIConnectionError` | network error, no response |
-
-## Links
-
-- API reference: [api.es-go.de/v1/docs](https://api.es-go.de/v1/docs)
-- OpenAPI spec: [api.es-go.de/v1/openapi.json](https://api.es-go.de/v1/openapi.json)
-- Changelog: [CHANGELOG.md](CHANGELOG.md)
-
-## License
-
-MIT, see [LICENSE](LICENSE).
-
-
-
-
-
-
-
-
-
-# ESGO Python SDK
 
 *[Deutsche Version weiter unten](#esgo-python-sdk-deutsch)*
 
@@ -204,7 +114,7 @@ Dazu kommen wir auch eigentlich langsam zum technischen Teil, weil wenn das hier
 
 Dann kommen wir mal zum eigentlichen Spass, was macht diese Python SDK überhaupt?
 
-Damit Spediteure und Verlader sowie ERP & TMS Systeme ESGO auch per API Anbinden können, gibts hier einen python Client welcher als Thin Wrapper agiert. Er basiert auf der openapi.json, diese findest du unter https://es-go.de/developers bzw. unter https://es-go.de/v1/openapi.json
+Damit Spediteure und Verlader sowie ERP & TMS Systeme ESGO auch per API Anbinden können, gibts hier einen python Client welcher als Thin Wrapper agiert. Er basiert auf der openapi.json, diese findest du unter https://es-go.de/developers bzw. unter https://api.es-go.de/v1/openapi.json
 
 Die meisten TMS/ERP systeme sind auch nicht in python, deswegen kann es gut sein dass das hier niemand jemals lesen wird, aber python import esgo hat crazy viel Aura, und der Name war frei deswegen konnte ich nicht widerstehen. Ansonsten sind in Arbeit noch das gleiche für TypeScript/JavaScript & C#.
 Sollte die SDK unzureichend sein oder nicht dokumentiert genug (entschuldige ich mich erstmal im Vorraus) und dann gibts alternativ immer die openapi.json für alle frei zugänglich
