@@ -1,0 +1,55 @@
+name: regenerate
+
+# Daily: fetch the live spec, regenerate src/esgo/_generated and open a pull
+# request when the contract changed. Nothing is released automatically.
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -e ".[dev]"
+      - run: python scripts/generate.py
+
+      - name: Run tests on the new spec
+        id: tests
+        continue-on-error: true
+        run: python -m pytest -q 2>&1 | tee pytest.log; exit ${PIPESTATUS[0]}
+
+      - name: Summarise test result
+        id: summary
+        run: |
+          if [ "${{ steps.tests.outcome }}" = "success" ]; then
+            echo "result=Tests pass on the new spec." >> "$GITHUB_OUTPUT"
+          else
+            echo "result=**Tests fail on the new spec.** A new operation probably needs an entry in src/esgo/_resources.py (see tests/test_operations.py). Push the fix to this branch." >> "$GITHUB_OUTPUT"
+          fi
+          rm -f pytest.log
+
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: spec-update
+          delete-branch: true
+          commit-message: "Spec-Update: openapi.json und generierter Code"
+          title: "Spec-Update von api.es-go.de"
+          body: |
+            The live spec at https://api.es-go.de/v1/openapi.json changed.
+            This pull request updates `openapi.json` and `src/esgo/_generated`.
+
+            ${{ steps.summary.outputs.result }}
+
+            Review the diff of `openapi.json` to see what changed in the contract.
+            Pull requests opened by this workflow do not start `test.yml`; the
+            test result above comes from this run.
