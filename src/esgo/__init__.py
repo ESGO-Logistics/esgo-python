@@ -5,10 +5,12 @@ Two ways to call it, like the ``stripe`` and ``openai`` packages:
     import esgo
 
     esgo.api_key = "esgo_live_..."
-    esgo.me.retrieve()
+    esgo.matches.search(origin="47057 Duisburg", destination="80331 München", weight_kg=12000)
 
     client = esgo.Client(api_key="esgo_live_...")
-    client.me.retrieve()
+    client.matches.search(origin="47057 Duisburg", destination="80331 München", weight_kg=12000)
+
+Responses are typed objects from ``esgo.models`` (``result.data[0].route_id``).
 """
 
 from __future__ import annotations
@@ -28,6 +30,7 @@ from ._errors import (
     RateLimitError,
     ServiceUnavailableError,
 )
+from ._generated import models
 from ._version import __version__
 
 __all__ = [
@@ -35,6 +38,9 @@ __all__ = [
     "api_key",
     "base_url",
     "me",
+    "matches",
+    "open_requests",
+    "models",
     "EsgoError",
     "APIConnectionError",
     "APIError",
@@ -79,3 +85,5 @@ class _GlobalResource:
 
 
 me = _GlobalResource("me")
+matches = _GlobalResource("matches")
+open_requests = _GlobalResource("open_requests")

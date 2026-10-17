@@ -1,4 +1,4 @@
-"""The ESGO client. Resources hang off it as attributes (``client.me``)."""
+"""The ESGO client. Resources hang off it as attributes (``client.matches``)."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from typing import Any
 import httpx
 
 from ._errors import APIConnectionError, EsgoError, error_from_response
+from ._resources import Matches, Me, OpenRequests
 from ._version import __version__
 
 DEFAULT_BASE_URL = "https://api.es-go.de"
@@ -46,6 +47,8 @@ class Client:
             "User-Agent": f"esgo-python/{__version__}",
         }
         self.me = Me(self)
+        self.matches = Matches(self)
+        self.open_requests = OpenRequests(self)
 
     def _request(self, method: str, path: str, *, json: Any = None) -> Any:
         try:
@@ -66,13 +69,3 @@ class Client:
 
     def __exit__(self, *exc: object) -> None:
         self.close()
-
-
-class Me:
-    """The API key in use and its quotas (``GET /v1/me``)."""
-
-    def __init__(self, client: Client) -> None:
-        self._client = client
-
-    def retrieve(self) -> dict[str, Any]:
-        return self._client._request("GET", "/v1/me")

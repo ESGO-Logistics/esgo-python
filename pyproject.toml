@@ -4,17 +4,17 @@ build-backend = "hatchling.build"
 
 [project]
 name = "esgo"
-version = "0.0.1"
+version = "0.1.0"
 description = "Official Python SDK for the ESGO API (empty-run matching for road freight)"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "ESGO Logistics UG (haftungsbeschränkt)" }]
-requires-python = ">=3.10"
-dependencies = ["httpx>=0.23,<1"]
+requires-python = ">=3.11"
+dependencies = ["httpx>=0.23,<1", "attrs>=22.2.0"]
 keywords = ["esgo", "logistics", "freight", "api", "sdk"]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
@@ -23,7 +23,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8"]
+dev = ["pytest>=8", "openapi-python-client==0.29.1"]
 
 [project.urls]
 Homepage = "https://es-go.de/developers"

@@ -74,6 +74,12 @@ class InternalServerError(APIError):
     """5xx: an error on the ESGO side."""
 
 
+# Tracebacks show esgo.RateLimitError instead of esgo._errors.RateLimitError.
+for _cls in (EsgoError, APIConnectionError, APIError, InvalidRequestError, AuthenticationError,
+             PermissionDeniedError, NotFoundError, RateLimitError, ServiceUnavailableError,
+             InternalServerError):
+    _cls.__module__ = "esgo"
+
 _BY_STATUS: dict[int, type[APIError]] = {
     400: InvalidRequestError,
     401: AuthenticationError,

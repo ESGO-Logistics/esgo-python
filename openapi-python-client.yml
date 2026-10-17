@@ -1,0 +1,3 @@
+# Settings for openapi-python-client (scripts/generate.py).
+# The generated package lives in src/esgo/_generated and is never edited by hand.
+post_hooks: []

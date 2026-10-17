@@ -49,7 +49,11 @@ def reset_globals(monkeypatch):
 
 def test_client_style_sends_key_and_returns_body():
     client, seen = _client(lambda r: httpx.Response(200, json=ME))
-    assert client.me.retrieve() == ME
+    me = client.me.retrieve()
+    assert isinstance(me, esgo.models.Me)
+    assert me.account_role == "buyer"
+    assert me.quotas[0].remaining == 199
+    assert me.key.created_at.year == 2026
     request = seen[0]
     assert request.method == "GET"
     assert str(request.url) == "https://api.es-go.de/v1/me"
@@ -61,7 +65,7 @@ def test_global_style_uses_module_key(monkeypatch):
     client, seen = _client(lambda r: httpx.Response(200, json=ME), api_key="esgo_live_global")
     monkeypatch.setattr(esgo, "api_key", "esgo_live_global")
     monkeypatch.setattr(esgo, "_default_client", client)
-    assert esgo.me.retrieve()["account_role"] == "buyer"
+    assert esgo.me.retrieve().account_role == "buyer"
     assert seen[0].headers["Authorization"] == "Bearer esgo_live_global"
 
 
@@ -111,6 +115,7 @@ def test_error_envelope_becomes_typed_exception(response, cls, code):
     assert info.value.status == response.status_code
     assert info.value.request_id == "req_123"
     assert isinstance(info.value, esgo.APIError)
+    assert type(info.value).__module__ == "esgo"
 
 
 def test_rate_limit_carries_retry_after():

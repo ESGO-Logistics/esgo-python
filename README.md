@@ -6,8 +6,8 @@ Official Python client for the [ESGO API](https://es-go.de/developers): find
 matching empty-run capacity for road freight and publish open transport
 requests from your TMS or ERP.
 
-> **Pre-release.** Version 0.0.1 covers `GET /v1/me` only. Matching search and
-> open requests follow in 0.1.0. The API may still change before 1.0.
+> **Alpha.** Covers all endpoints of API v1: key info, matching search and open
+> requests. The SDK may still change before 1.0; see [CHANGELOG.md](CHANGELOG.md).
 
 ## Installation
 
@@ -15,7 +15,7 @@ requests from your TMS or ERP.
 pip install esgo
 ```
 
-Requires Python 3.10 or newer.
+Requires Python 3.11 or newer.
 
 ## Access
 
@@ -33,8 +33,14 @@ import esgo
 
 esgo.api_key = "esgo_live_..."   # or set the ESGO_API_KEY environment variable
 
-me = esgo.me.retrieve()
-print(me["account_role"], me["quotas"])
+result = esgo.matches.search(
+    origin="47057 Duisburg",
+    destination="80331 München",
+    weight_kg=12000,
+    loading_meters=4.8,
+)
+for match in result.data:
+    print(match.route_id, match.departure_window.start, match.price_estimate_eur, match.booking_url)
 ```
 
 Or create a client, which is useful when you work with several keys:
@@ -44,7 +50,41 @@ import esgo
 
 with esgo.Client(api_key="esgo_live_...") as client:
     me = client.me.retrieve()
+    print(me.account_role, [(q.name, q.remaining) for q in me.quotas])
 ```
+
+### Open requests
+
+Publish a transport request; ESGO matches it against carriers' empty runs:
+
+```python
+from datetime import datetime
+
+request = esgo.open_requests.create(
+    origin="47057 Duisburg",
+    destination="80331 München",
+    weight_kg=12000,
+    loading_meters=4.8,
+    cargo_type="Paletten",
+    time_windows=[{"start": datetime(2026, 11, 3, 8), "end": datetime(2026, 11, 3, 16)}],
+)
+print(request.id, request.matches_found)
+
+for match in esgo.open_requests.list_matches(request.id).data:
+    print(match.route_id, match.match_score)
+```
+
+Times are local time Europe/Berlin. Responses are typed objects from
+`esgo.models`; call `.to_dict()` on any of them for a plain `dict`.
+
+| Method | Endpoint |
+|---|---|
+| `me.retrieve()` | `GET /v1/me` |
+| `matches.search(**params)` | `POST /v1/matches/search` |
+| `open_requests.create(**params)` | `POST /v1/open-requests` |
+| `open_requests.list_matches(request_id)` | `GET /v1/open-requests/{request_id}/matches` |
+
+All parameters are described in the [API reference](https://api.es-go.de/v1/docs).
 
 ## Errors
 
@@ -125,9 +165,9 @@ Viel gerede von mir (es ist grad 0 Uhr das ganz normal zu der Zeit) und jetzt zu
 LG Ivo
 
 
-> **Vorabversion (Pre-release).** Version 0.0.1 deckt zunächst nur `GET /v1/me`
-> ab. Die Matching-Suche und offene Transportanfragen folgen in Version 0.1.0.
-> Bis Version 1.0 können sich noch Änderungen an der API ergeben.
+> **Alpha.** Deckt alle Endpunkte der API v1 ab: Schlüssel-Infos,
+> Matching-Suche und offene Transportanfragen. Bis Version 1.0 kann sich das SDK
+> noch ändern, siehe [CHANGELOG.md](CHANGELOG.md).
 
 ## Installation
 
@@ -135,7 +175,7 @@ LG Ivo
 pip install esgo
 ```
 
-Erfordert Python 3.10 oder neuer.
+Erfordert Python 3.11 oder neuer.
 
 ## Zugang
 
@@ -153,8 +193,14 @@ import esgo
 
 esgo.api_key = "esgo_live_..."   # oder über die Umgebungsvariable ESGO_API_KEY setzen
 
-me = esgo.me.retrieve()
-print(me["account_role"], me["quotas"])
+result = esgo.matches.search(
+    origin="47057 Duisburg",
+    destination="80331 München",
+    weight_kg=12000,
+    loading_meters=4.8,
+)
+for match in result.data:
+    print(match.route_id, match.departure_window.start, match.price_estimate_eur, match.booking_url)
 ```
 
 Alternativ kann eine eigene Client-Instanz erstellt werden (praktisch, wenn mit
@@ -165,7 +211,41 @@ import esgo
 
 with esgo.Client(api_key="esgo_live_...") as client:
     me = client.me.retrieve()
+    print(me.account_role, [(q.name, q.remaining) for q in me.quotas])
 ```
+
+### Offene Transportanfragen
+
+Eine Anfrage einstellen; ESGO gleicht sie mit den Leerfahrten der Spediteure ab:
+
+```python
+from datetime import datetime
+
+request = esgo.open_requests.create(
+    origin="47057 Duisburg",
+    destination="80331 München",
+    weight_kg=12000,
+    loading_meters=4.8,
+    cargo_type="Paletten",
+    time_windows=[{"start": datetime(2026, 11, 3, 8), "end": datetime(2026, 11, 3, 16)}],
+)
+print(request.id, request.matches_found)
+
+for match in esgo.open_requests.list_matches(request.id).data:
+    print(match.route_id, match.match_score)
+```
+
+Zeiten sind Ortszeit Europe/Berlin. Antworten sind typisierte Objekte aus
+`esgo.models`; `.to_dict()` liefert jeweils ein normales `dict`.
+
+| Methode | Endpunkt |
+|---|---|
+| `me.retrieve()` | `GET /v1/me` |
+| `matches.search(**params)` | `POST /v1/matches/search` |
+| `open_requests.create(**params)` | `POST /v1/open-requests` |
+| `open_requests.list_matches(request_id)` | `GET /v1/open-requests/{request_id}/matches` |
+
+Alle Parameter stehen in der [API-Referenz](https://api.es-go.de/v1/docs).
 
 ## Fehlerbehandlung
 
