@@ -34,6 +34,21 @@ Changelog = "https://github.com/ESGO-Logistics/esgo-python/blob/main/CHANGELOG.m
 [tool.hatch.build.targets.wheel]
 packages = ["src/esgo"]
 
+# Explicit list: in 0.0.1 a local .venv-1 (not matched by .gitignore) ended up
+# in the sdist. Only what is listed here is shipped.
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/esgo",
+    "tests",
+    "scripts",
+    "openapi.json",
+    "openapi-python-client.yml",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "pyproject.toml",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
