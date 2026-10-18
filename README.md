@@ -116,6 +116,7 @@ except esgo.APIError as e:
 - API reference: [api.es-go.de/v1/docs](https://api.es-go.de/v1/docs)
 - OpenAPI spec: [api.es-go.de/v1/openapi.json](https://api.es-go.de/v1/openapi.json)
 - .NET SDK: [nuget.org/packages/Esgo](https://www.nuget.org/packages/Esgo) ([source](https://github.com/ESGO-Logistics/esgo-dotnet))
+- MCP server for AI assistants: [pypi.org/project/esgo-mcp](https://pypi.org/project/esgo-mcp/) ([source](https://github.com/ESGO-Logistics/esgo-mcp))
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 
 ## License
@@ -278,6 +279,7 @@ except esgo.APIError as e:
 - API-Referenz: [api.es-go.de/v1/docs](https://api.es-go.de/v1/docs)
 - OpenAPI-Spezifikation: [api.es-go.de/v1/openapi.json](https://api.es-go.de/v1/openapi.json)
 - .NET-SDK: [nuget.org/packages/Esgo](https://www.nuget.org/packages/Esgo) ([Quellcode](https://github.com/ESGO-Logistics/esgo-dotnet))
+- MCP-Server für KI-Assistenten: [pypi.org/project/esgo-mcp](https://pypi.org/project/esgo-mcp/) ([Quellcode](https://github.com/ESGO-Logistics/esgo-mcp))
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 
 ## Lizenz
